@@ -7,7 +7,7 @@ import App from './App.tsx'
 
 
 // Reemplaza esto con tu clave pública de Clerk (empieza con pk_test_...)
-const PUBLISHABLE_KEY = "pk_test_ZGVzaXJlZC1oZXJyaW5nLTUwLmNsZXJrLmFjY291bnRzLmRldiQ"
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key")
