@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/clerk-react";
 import { Navbar } from "./components/Navbar";
 import { Sidebar } from "./components/Sidebar";
 import { ClientDashboard } from "./components/ClientDashboard";
-import { getClients } from "./services/api";
+import { getClients, setupAxiosInterceptors } from "./services/api";
 import type { ClienteResponse } from "./services/api";
 
 function App() {
+  const { getToken } = useAuth(); // Extraemos el token de la sesión actual de Clerk
   const [clients, setClients] = useState<ClienteResponse[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [isApiReady, setIsApiReady] = useState(false); // Estado para evitar peticiones sin token
 
   const loadClients = async () => {
     try {
@@ -18,9 +21,18 @@ function App() {
     }
   };
 
+  // 1. Configuramos Axios para que inyecte el token de Clerk
   useEffect(() => {
-    loadClients();
-  }, []);
+    setupAxiosInterceptors(() => getToken());
+    setIsApiReady(true);
+  }, [getToken]);
+
+  // 2. Cargamos los datos SOLO cuando Axios ya está configurado
+  useEffect(() => {
+    if (isApiReady) {
+      loadClients();
+    }
+  }, [isApiReady]);
 
   return (
     <>

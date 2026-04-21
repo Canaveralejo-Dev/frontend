@@ -6,6 +6,18 @@ const api = axios.create({
   baseURL,
 });
 
+// --- NUEVO: Interceptor para inyectar el token de Clerk en cada petición ---
+export const setupAxiosInterceptors = (getToken: () => Promise<string | null>) => {
+  api.interceptors.request.clear(); // Limpiamos interceptores previos
+  api.interceptors.request.use(async (config) => {
+    const token = await getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+};
+
 // Types from Backend
 export interface ClienteResponse {
   id: string;
