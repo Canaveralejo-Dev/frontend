@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-export const baseURL = 'http://localhost:8000';
+// Vite leerá la URL desde Vercel en producción. 
+// Si estás en tu PC y no hay variable, usará localhost por defecto.
+export const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL,
