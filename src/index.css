@@ -105,7 +105,6 @@ body {
 
 .sidebar-header {
   padding: 1.25rem;
-  border-bottom: 1px solid var(--surface-border);
   font-weight: 600;
   color: var(--primary-color);
 }
