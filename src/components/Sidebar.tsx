@@ -69,7 +69,6 @@ export function Sidebar({ clients, selectedClientId, onSelectClient, onRefreshCl
             >
               <h3>{c.nombre}</h3>
               {/* MOCKED DATA as requested */}
-              <p>Última Insp: {new Date().toLocaleDateString()}</p>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
                 <span className="status-badge">Activo</span>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>ID: {c.id.slice(0, 8)}...</span>
