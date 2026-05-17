@@ -71,18 +71,26 @@ return (
             </>
           ) : (
             /* --- RENDER DE LA TABLA COMPLETA ESTRUCTURADA --- */
-            <div className="preview-data-grid">
+        <div className="preview-data-grid">
               {previewData.vehiculos.map((veh) => {
                 const llantasVehiculo = previewData.llantas.filter(ll => ll.vehiculo_id === veh.id);
 
                 return (
                   <div key={veh.id} className="preview-vehicle-card">
-                    {/* Encabezado del Vehículo */}
+                    {/* Encabezado del Vehículo (Actualizado con Marca y Tipo) */}
                     <div className="preview-vehicle-header">
-                      <span className="preview-vehicle-title">
-                        🚗 Vehículo: {veh.codigo_vehiculo}
-                      </span>
-                      <div className="preview-vehicle-metrics">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                        <span className="preview-vehicle-title">
+                          🚗 Vehículo: {veh.codigo_vehiculo}
+                        </span>
+                        {/* Subtítulo con las variables resueltas del vehículo */}
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          {veh.marca_vehiculo} • {veh.tipo_vehiculo} ({veh.no_llantas} Llantas)
+                        </span>
+                      </div>
+                      
+                      {/* Métricas tomadas en la inspección */}
+                      <div className="preview-vehicle-metrics" style={{ alignItems: 'center' }}>
                         <span><strong>KM:</strong> {veh.metricas?.kilometraje ?? 'N/A'}</span>
                         <span><strong>Horómetro:</strong> {veh.metricas?.horometro ?? 'N/A'}</span>
                       </div>
@@ -96,11 +104,18 @@ return (
                         <table className="preview-details-table">
                           <thead>
                             <tr>
-                              <th>Posición</th>
+                              <th>Pos.</th>
                               <th>Cód. Llanta</th>
+                              <th>Marca</th>
+                              <th>Diseño</th>
+                              <th>Dimensión</th>
+                              <th>Tipo</th>
+                              <th>Fecha Montaje</th>
+                              <th>KM Montaje</th>
+                              <th>Hor. Montaje</th>
                               <th>Presión (PSI)</th>
-                              <th>Milimetraje (Int/Cent/Ext)</th>
-                              <th style={{ textAlign: 'left' }}>Observaciones</th>
+                              <th>Mm (Int/Cent/Ext)</th>
+                              <th className="obs-col-header">Observaciones</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -108,8 +123,23 @@ return (
                               <tr key={ll.id}>
                                 <td className="posicion-col">{ll.posicion}</td>
                                 <td className="code-col">{ll.codigo_llanta}</td>
-                                <td>{ll.presion}</td>
-                                <td>{ll.medida_int}mm / {ll.medida_cent}mm / {ll.medida_ext}mm</td>
+                                
+                                <td>{ll.marca_llanta}</td>
+                                <td>{ll.diseno_llanta}</td>
+                                <td>{ll.dimension_llanta}</td>
+                                <td>{ll.tipo_llanta}</td>
+
+                                <td style={{ whiteSpace: 'nowrap' }}>
+                                  {ll.fecha_montaje ? new Date(ll.fecha_montaje).toLocaleDateString() : 'N/A'}
+                                </td>
+                                <td>{ll.kilometraje_montaje ?? 'N/A'}</td>
+                                <td>{ll.horometro_montaje ?? 'N/A'}</td>
+
+                                <td>{ll.presion ?? '-'}</td>
+                                <td style={{ whiteSpace: 'nowrap' }}>
+                                  {ll.medida_int ?? '-'} / {ll.medida_cent ?? '-'} / {ll.medida_ext ?? '-'}
+                                </td>
+                                
                                 <td className={`obs-col ${!ll.observacion ? 'empty' : ''}`}>
                                   {ll.observacion || "Sin novedades"}
                                 </td>
@@ -122,8 +152,8 @@ return (
                   </div>
                 );
               })}
-            </div>
-          )}
+            </div>        
+        )}
 
         </div>
 

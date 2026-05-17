@@ -142,6 +142,8 @@ export interface InspeccionPreviewResponse {
     id: string;
     codigo_vehiculo: string;
     no_llantas: number;
+    marca_vehiculo: string;    // Añadido
+    tipo_vehiculo: string;     // Añadido
     metricas: {
       horometro: number;
       kilometraje: number;
@@ -149,17 +151,24 @@ export interface InspeccionPreviewResponse {
     } | null;
   }[];
   llantas: {
+    // ... se mantiene exactamente igual al paso anterior
     id: string;
     vehiculo_id: string;
     codigo_llanta: string;
     posicion: number;
-    presion: number;
-    medida_int: number;
-    medida_cent: number;
-    medida_ext: number;
+    marca_llanta: string;
+    diseno_llanta: string;
+    dimension_llanta: string;
+    tipo_llanta: string;
+    fecha_montaje: string | null;
+    kilometraje_montaje: number | null;
+    horometro_montaje: number | null;
+    presion: number | null;
+    medida_int: number | null;
+    medida_cent: number | null;
+    medida_ext: number | null;
     observacion: string | null;
   }[];
-  variables_referencia: any[];
 }
 
 export default api;
