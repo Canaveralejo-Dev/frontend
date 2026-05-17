@@ -134,4 +134,32 @@ export const getVariablesVehiculo = async (clientId: string): Promise<Record<str
   return data;
 };
 
+
+export interface InspeccionPreviewResponse {
+  inspeccion: any;
+  cliente: any;
+  vehiculos: {
+    id: string;
+    codigo_vehiculo: string;
+    no_llantas: number;
+    metricas: {
+      horometro: number;
+      kilometraje: number;
+      created_at: string;
+    } | null;
+  }[];
+  llantas: {
+    id: string;
+    vehiculo_id: string;
+    codigo_llanta: string;
+    posicion: number;
+    presion: number;
+    medida_int: number;
+    medida_cent: number;
+    medida_ext: number;
+    observacion: string | null;
+  }[];
+  variables_referencia: any[];
+}
+
 export default api;

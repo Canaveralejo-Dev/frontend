@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
-import { Plus, Car, FileCheck, Download } from "lucide-react";
+import { Plus, Car, FileCheck, Download, Eye, X } from "lucide-react";
 import api, { getClient, getVehicles, getInspections } from "../services/api";
 import { UploadInspectionModal } from "./UploadInspectionModal";
 import type { ClienteResponse, VehiculoResponse, InspeccionResumenResponse } from "../services/api";
+import { InspectionPreviewModal } from "./PreviewInspection";
 
 interface ClientDashboardProps {
   clientId: string;
@@ -14,6 +15,9 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
   const [inspections, setInspections] = useState<InspeccionResumenResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  
+  // --- NUEVO ESTADO: Para controlar la inspección seleccionada ---
+  const [selectedInspection, setSelectedInspection] = useState<InspeccionResumenResponse | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -37,9 +41,8 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
     fetchData();
   }, [fetchData]);
 
-  // Se eliminó handleViewInspection. Ahora la descarga es la acción principal.
   const handleDownloadExcel = async (id: string) => {
-    setLoading(true); // Añadido para dar feedback de carga mientras descarga
+    setLoading(true);
     try {
       const response = await api.get(`/inspection/${id}/excel`, {
         responseType: 'blob',
@@ -106,9 +109,11 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
         </div>
       </div>
 
-      <div className="lists-container">
-        {/* Vehicles Section */}
-        <div className="glass list-panel">
+      {/* CAMBIO 1: Ajuste de proporciones mediante estilos inline en los paneles */}
+      <div className="lists-container" style={{ display: 'flex', gap: '1.5rem', width: '100%' }}>
+        
+        {/* Vehicles Section (Proporción 1) */}
+        <div className="glass list-panel" style={{ flex: 1 }}>
           <div className="list-header">
             <span><Car className="inline mr-2" size={18} style={{ marginRight: '0.5rem' }}/> Vehículos</span>
           </div>
@@ -144,8 +149,8 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
           </div>
         </div>
 
-        {/* Inspections Section */}
-        <div className="glass list-panel">
+        {/* Inspections Section (Proporción 2) */}
+        <div className="glass list-panel" style={{ flex: 2 }}>
           <div className="list-header">
             <span><FileCheck className="inline mr-2" size={18} style={{ marginRight: '0.5rem' }}/> Inspecciones</span>
           </div>
@@ -157,9 +162,9 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
                 <div 
                   key={insp.id} 
                   className="data-item" 
-                  onClick={() => handleDownloadExcel(insp.id)} 
+                  onClick={() => setSelectedInspection(insp)} // CAMBIO 2: Ahora abre la previsualización
                   style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                  title="Descargar Excel"
+                  title="Ver detalles de la inspección"
                 >
                   <div style={{ flex: 1 }}>
                     <div className="data-item-row">
@@ -177,9 +182,9 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
                     </div>
                   </div>
                   
-                  {/* Icono de descarga añadido para la UI */}
-                  <div style={{ padding: '0.5rem', color: 'var(--primary-color)' }}>
-                    <Download size={20} />
+                  {/* Cambiado el ícono a "Eye" para indicar visualización */}
+                  <div style={{ padding: '0.5rem', color: 'var(--text-muted)' }}>
+                    <Eye size={20} />
                   </div>
                 </div>
               ))
@@ -194,11 +199,12 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
         </div>
       </div>
 
-      {isUploadModalOpen && (
-        <UploadInspectionModal 
-          clientId={clientId}
-          onClose={() => setIsUploadModalOpen(false)}
-          onSuccess={fetchData}
+      {/* --- CAMBIO 3: MODAL DE VISUALIZACIÓN DE DATOS E INSPECCIÓN --- */}
+      {selectedInspection && (
+        <InspectionPreviewModal 
+          inspectionSummary={selectedInspection}
+          onClose={() => setSelectedInspection(null)}
+          onDownload={() => handleDownloadExcel(selectedInspection.id)}
         />
       )}
     </div>

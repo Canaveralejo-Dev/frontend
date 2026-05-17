@@ -195,6 +195,23 @@ body {
   opacity: 0.9;
 }
 
+.btn-terciary {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--white);
+  color: var(--black);
+  border: 1px solid var(--surface-border);
+
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Dashboard Content Area */
 .dashboard-content {
   flex: 1;
@@ -495,4 +512,239 @@ body {
 .report-table td:nth-child(8),
 .report-table td:nth-child(9) {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* --- CONTENEDOR Y CAPA BASE (OVERLAY) --- */
+.preview-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(10, 11, 13, 0.4); /* Opacidad basada en tu --black */
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.preview-modal-container {
+  width: 100%;
+  max-width: 650px;
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-color);
+  color: var(--text-main);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  transition: max-width 0.3s ease-in-out;
+  border: 1px solid var(--surface-border);
+}
+
+/* Variación cuando se activa la tabla completa */
+.preview-modal-container.expanded {
+  max-width: 1100px;
+}
+
+/* --- CABECERA (PRIMARY COLOR + TEXTO BLANCO) --- */
+.preview-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.preview-modal-header h3 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.preview-modal-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.preview-modal-close-btn:hover {
+  opacity: 1;
+}
+
+/* --- CUERPO GENERAL --- */
+.preview-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  background-color: var(--surface-color);
+}
+
+/* --- TABLA DE RESUMEN INICIAL --- */
+.preview-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.preview-summary-table tr {
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.preview-summary-table td {
+  padding: 0.75rem 0.5rem;
+}
+
+.preview-summary-table td:first-child {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.preview-action-center {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.preview-btn-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+}
+
+/* --- RENDER DETALLADO POR VEHÍCULO --- */
+.preview-data-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.preview-vehicle-card {
+  background-color: var(--white);
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.preview-vehicle-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid var(--grey-extra-light);
+  padding-bottom: 0.5rem;
+}
+
+.preview-vehicle-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}
+
+.preview-vehicle-metrics {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.preview-empty-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+/* --- TABLA MATRIZ DE LLANTAS --- */
+.preview-table-responsive {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border);
+}
+
+.preview-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.preview-details-table thead tr {
+  background-color: var(--grey-extra-light);
+  color: var(--text-main);
+}
+
+.preview-details-table th {
+  padding: 0.75rem;
+  font-weight: 600;
+}
+
+.preview-details-table tr {
+  border-bottom: 1px solid var(--grey-extra-light);
+}
+
+.preview-details-table tr:last-child {
+  border-bottom: none;
+}
+
+.preview-details-table td {
+  padding: 0.75rem;
+}
+
+.preview-details-table td.posicion-col {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.preview-details-table td.code-col {
+  font-family: monospace;
+  font-weight: 500;
+}
+
+/* Asignamos anchos proporcionales a las columnas fijas */
+.preview-details-table th:nth-child(1) { width: 10%; } /* Posición */
+.preview-details-table th:nth-child(2) { width: 15%; } /* Código */
+.preview-details-table th:nth-child(3) { width: 15%; } /* Presión */
+.preview-details-table th:nth-child(4) { width: 25%; } /* Milimetraje */
+
+.preview-details-table .obs-col-header,
+.preview-details-table td.obs-col {
+  width: 35%;               /* Toma el resto del espacio disponible */
+  min-width: 250px;         /* Evita que se comprima demasiado */
+  text-align: left;
+  white-space: normal;      /* Fuerza a los textos largos a saltar de línea */
+  word-break: break-word;   /* Rompe palabras huérfanas o excesivamente largas */
+  line-height: 1.4;         /* Agrega un espaciado cómodo entre líneas */
+  padding: 0.75rem 1rem;    /* Un poco de colchón interno a los lados */
+}
+
+.preview-details-table td.obs-col.empty {
+  color: var(--grey);
+}
+
+/* --- PIE DEL MODAL (FOOTER GRIS CLARO) --- */
+.preview-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--surface-border);
+  background-color: var(--grey-extra-light);
+}
+
+.preview-btn-download {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
