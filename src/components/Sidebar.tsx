@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Users, Plus, Search } from "lucide-react"; // <-- Agregamos el icono Search
+// 1. Agregamos el icono Loader2
+import { Users, Plus, Search, Loader2 } from "lucide-react"; 
 import type { ClienteResponse } from "../services/api";
 import { CreateClientModal } from "./CreateClientModal";
 
@@ -8,14 +9,20 @@ interface SidebarProps {
   selectedClientId: string | null;
   onSelectClient: (id: string) => void;
   onRefreshClients: () => void;
+  // 2. Nueva propiedad opcional para saber si está cargando
+  isLoading?: boolean; 
 }
 
-export function Sidebar({ clients, selectedClientId, onSelectClient, onRefreshClients }: SidebarProps) {
+export function Sidebar({ 
+  clients, 
+  selectedClientId, 
+  onSelectClient, 
+  onRefreshClients, 
+  isLoading = false // Valor por defecto en falso
+}: SidebarProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // <-- 1. Nuevo estado para el buscador
   const [searchTerm, setSearchTerm] = useState(""); 
 
-  // <-- 2. Filtramos los clientes en tiempo real ignorando mayúsculas y minúsculas
   const filteredClients = clients.filter((c) =>
     c.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -27,7 +34,6 @@ export function Sidebar({ clients, selectedClientId, onSelectClient, onRefreshCl
         Clientes
       </div>
       
-      {/* <-- 3. Agregamos la barra de búsqueda justo debajo del header */}
       <div style={{ padding: '0 1rem', marginBottom: '0.5rem' }}>
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           <Search 
@@ -41,7 +47,7 @@ export function Sidebar({ clients, selectedClientId, onSelectClient, onRefreshCl
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%',
-              padding: '0.5rem 0.5rem 0.5rem 2.2rem', // padding a la izquierda para dejarle espacio al icono
+              padding: '0.5rem 0.5rem 0.5rem 2.2rem',
               borderRadius: '8px',
               border: '1px solid var(--border-color, #ccc)',
               background: 'transparent',
@@ -53,14 +59,23 @@ export function Sidebar({ clients, selectedClientId, onSelectClient, onRefreshCl
       </div>
 
       <div className="client-list">
-        {/* Usamos filteredClients en lugar de clients para dibujar la lista */}
-        {filteredClients.length === 0 ? (
+        {/* 3. Lógica de renderizado condicional */}
+        {isLoading ? (
+          // Vista de carga
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', color: 'var(--text-muted, #888)' }}>
+            {/* Si usas Tailwind, usa la clase "animate-spin". Si no, asegúrate de tener una clase CSS que haga girar el icono */}
+            <Loader2 className="animate-spin" size={32} style={{ marginBottom: '0.5rem' }} />
+            <span style={{ fontSize: '0.9rem' }}>Cargando clientes...</span>
+          </div>
+        ) : filteredClients.length === 0 ? (
+          // Vista sin resultados / vacío
           <p className="text-muted" style={{ padding: '1rem', opacity: 0.5, textAlign: 'center' }}>
             {clients.length === 0 
               ? "No hay clientes registrados." 
               : "No se encontraron resultados."}
           </p>
         ) : (
+          // Vista normal con lista
           filteredClients.map((c) => (
             <div 
               key={c.id} 
@@ -68,7 +83,6 @@ export function Sidebar({ clients, selectedClientId, onSelectClient, onRefreshCl
               onClick={() => onSelectClient(c.id)}
             >
               <h3>{c.nombre}</h3>
-              {/* MOCKED DATA as requested */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
                 <span className="status-badge">Activo</span>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>ID: {c.id.slice(0, 8)}...</span>

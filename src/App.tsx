@@ -11,13 +11,20 @@ function App() {
   const [clients, setClients] = useState<ClienteResponse[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [isApiReady, setIsApiReady] = useState(false); // Estado para evitar peticiones sin token
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loadClients = async () => {
+    // 2. Activamos el círculo de progreso antes de la petición
+    setIsLoading(true); 
     try {
       const data = await getClients();
       setClients(data);
     } catch (error) {
       console.error("Failed to fetch clients", error);
+    } finally {
+      // 3. El bloque 'finally' se ejecuta SIEMPRE (si sale bien o si hay error)
+      // Así nos aseguramos de apagar el cargador pase lo que pase.
+      setIsLoading(false);
     }
   };
 
@@ -40,6 +47,7 @@ function App() {
       <main className="layout-main">
         <Sidebar 
           clients={clients} 
+          isLoading={isLoading} // <-- Le pasas el booleano aquí
           selectedClientId={selectedClientId}
           onSelectClient={setSelectedClientId}
           onRefreshClients={loadClients}
