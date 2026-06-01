@@ -3,6 +3,7 @@ import { Plus, Car, FileCheck, Eye } from "lucide-react";
 import api, { getClient, getVehicles, getInspections } from "../services/api";
 import type { ClienteResponse, VehiculoResponse, InspeccionResumenResponse } from "../services/api";
 import { InspectionPreviewModal } from "./PreviewInspection";
+import { UploadInspectionModal } from "./UploadInspectionModal";
 
 interface ClientDashboardProps {
   clientId: string;
@@ -13,6 +14,7 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
   const [vehicles, setVehicles] = useState<VehiculoResponse[]>([]);
   const [inspections, setInspections] = useState<InspeccionResumenResponse[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   
   // --- NUEVO ESTADO: Para controlar la inspección seleccionada ---
   const [selectedInspection, setSelectedInspection] = useState<InspeccionResumenResponse | null>(null);
@@ -189,7 +191,7 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
             )}
           </div>
           <div className="panel-footer">
-            <button className="btn-secondary" >
+            <button className="btn-secondary" onClick={() => setIsUploadModalOpen(true)}>
               <Plus size={18} />
               Subir Inspección
             </button>
@@ -205,6 +207,15 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
           onDownload={() => handleDownloadExcel(selectedInspection.id)}
         />
       )}
+      
+      {isUploadModalOpen && (
+        <UploadInspectionModal 
+          clientId={clientId}
+          onClose={() => setIsUploadModalOpen(false)}
+          onSuccess={fetchData}
+        />
+      )}
+
     </div>
   );
 }
