@@ -68,6 +68,34 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
     }
   };
 
+  const handleClientKardexExcel = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/inspection/kardex/${clientId}/excel`, {
+        responseType: 'blob',
+      });
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `inspeccion_${clientId}.xlsx`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match) filename = match[1];
+      }
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading excel:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   if (loading && !client) {
     return <div className="glass dashboard-content" style={{ justifyContent: 'center', alignItems: 'center' }}>Cargando...</div>;
   }
@@ -147,7 +175,14 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
               ))
             )}
           </div>
+        <div className="panel-footer">
+          <button className="btn-secondary" onClick={() => handleClientKardexExcel()}>
+            Descargar Kardex de Flota
+          </button>
         </div>
+      </div>
+
+
 
         {/* Inspections Section (Proporción 2) */}
         <div className="glass list-panel" style={{ flex: 2 }}>
