@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Plus, Car, FileCheck, Eye } from "lucide-react";
+import { Plus, Car, FileCheck, Eye, Loader2 } from "lucide-react";
 import api, { getClient, getVehicles, getInspections } from "../services/api";
 import type { ClienteResponse, VehiculoResponse, InspeccionResumenResponse } from "../services/api";
 import { InspectionPreviewModal } from "./PreviewInspection";
@@ -96,8 +96,13 @@ export function ClientDashboard({ clientId }: ClientDashboardProps) {
   };
 
 
-  if (loading && !client) {
-    return <div className="glass dashboard-content" style={{ justifyContent: 'center', alignItems: 'center' }}>Cargando...</div>;
+  if (loading) {
+    return (
+      <div className="glass dashboard-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Loader2 className="animate-spin text-primary" size={48} style={{ marginBottom: '1rem', color: 'var(--primary-color)' }} />
+        <p style={{ color: 'var(--text-muted)' }}>Cargando datos del cliente...</p>
+      </div>
+    );
   }
 
   if (!client) {

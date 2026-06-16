@@ -1,6 +1,5 @@
 import { useState } from "react";
-// 1. Agregamos el icono Loader2
-import { Users, Plus, Search, Loader2 } from "lucide-react"; 
+import { Users, Plus, Search, Loader2, MapPin } from "lucide-react";
 import type { ClienteResponse } from "../services/api";
 import { CreateClientModal } from "./CreateClientModal";
 
@@ -9,7 +8,6 @@ interface SidebarProps {
   selectedClientId: string | null;
   onSelectClient: (id: string) => void;
   onRefreshClients: () => void;
-  // 2. Nueva propiedad opcional para saber si está cargando
   isLoading?: boolean; 
 }
 
@@ -18,14 +16,23 @@ export function Sidebar({
   selectedClientId, 
   onSelectClient, 
   onRefreshClients, 
-  isLoading = false // Valor por defecto en falso
+  isLoading = false 
 }: SidebarProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); 
+  // 1. Nuevo estado para el filtro de sede
+  const [sedeFilter, setSedeFilter] = useState(""); 
 
-  const filteredClients = clients.filter((c) =>
-    c.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // 2. Lógica de filtrado combinada (Buscador + Selector de Sede)
+  const filteredClients = clients.filter((c) => {
+    // Verifica si coincide con el texto del buscador
+    const matchesSearch = c.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+    // Verifica si coincide con la sede seleccionada (si sedeFilter está vacío, devuelve true para todos)
+    const matchesSede = sedeFilter === "" || c.nombre.includes(sedeFilter);
+    
+    // Retorna el cliente solo si cumple AMBAS condiciones
+    return matchesSearch && matchesSede;
+  });
 
   return (
     <aside className="glass sidebar">
@@ -34,7 +41,10 @@ export function Sidebar({
         Clientes
       </div>
       
-      <div style={{ padding: '0 1rem', marginBottom: '0.5rem' }}>
+      {/* 3. Contenedor de filtros actualizado */}
+      <div style={{ padding: '0 1rem', marginBottom: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        
+        {/* Barra de búsqueda */}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           <Search 
             size={16} 
@@ -56,26 +66,49 @@ export function Sidebar({
             }}
           />
         </div>
+
+        {/* 4. Nuevo selector de sede permanente */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <MapPin 
+            size={16} 
+            style={{ position: 'absolute', left: '10px', color: 'var(--text-muted, #888)' }} 
+          />
+          <select
+            value={sedeFilter}
+            onChange={(e) => setSedeFilter(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.5rem 0.5rem 0.5rem 2.2rem', // Mismo padding que el buscador para alinear textos
+              borderRadius: '8px',
+              border: '1px solid var(--border-color, #ccc)',
+              background: 'transparent',
+              color: 'var(--text-muted)',
+              outline: 'none',
+              cursor: 'pointer',
+              appearance: 'none' // Quita la flecha nativa fea en algunos navegadores
+            }}
+          >
+            <option value="">Todas las sedes</option>
+            <option value="Valle">Valle</option>
+            <option value="Bogotá">Bogotá</option>
+            <option value="Medellín">Medellín</option>
+          </select>
+        </div>
       </div>
 
       <div className="client-list">
-        {/* 3. Lógica de renderizado condicional */}
         {isLoading ? (
-          // Vista de carga
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', color: 'var(--text-muted, #888)' }}>
-            {/* Si usas Tailwind, usa la clase "animate-spin". Si no, asegúrate de tener una clase CSS que haga girar el icono */}
             <Loader2 className="animate-spin" size={32} style={{ marginBottom: '0.5rem' }} />
             <span style={{ fontSize: '0.9rem' }}>Cargando clientes...</span>
           </div>
         ) : filteredClients.length === 0 ? (
-          // Vista sin resultados / vacío
           <p className="text-muted" style={{ padding: '1rem', opacity: 0.5, textAlign: 'center' }}>
             {clients.length === 0 
               ? "No hay clientes registrados." 
               : "No se encontraron resultados."}
           </p>
         ) : (
-          // Vista normal con lista
           filteredClients.map((c) => (
             <div 
               key={c.id} 
